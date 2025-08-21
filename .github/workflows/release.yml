@@ -59,4 +59,13 @@ jobs:
       contents: write   # required to create a GitHub Release and upload assets
     steps:
       - name: Download artifacts
-        uses: ac
+        uses: actions/download-artifact@v4
+        with:
+          name: bins
+          path: ./dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: ./dist/*.zip
