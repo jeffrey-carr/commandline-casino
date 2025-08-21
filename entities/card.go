@@ -32,13 +32,14 @@ const (
 )
 
 type Card struct {
-	Code     string
-	Rank     StandardRank
-	Suit     StandardSuit
-	Value    int
-	AltValue int
-	IsAlt    bool
-	Hidden   bool
+	Code      string
+	Rank      StandardRank
+	Suit      StandardSuit
+	Value     int
+	AltValue  int
+	IsAlt     bool
+	Hidden    bool
+	SortValue int
 }
 
 func (c Card) GetValue() int {

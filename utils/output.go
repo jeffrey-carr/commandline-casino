@@ -20,13 +20,13 @@ const (
 
 // Text coloring
 
-func Bold(s string) string   { return AnsiBold + s + AnsiReset }
-func Dim(s string) string    { return AnsiDim + s + AnsiReset }
-func Blue(s string) string   { return AnsiBlue + s + AnsiReset }
-func Cyan(s string) string   { return AnsiCyan + s + AnsiReset }
-func Green(s string) string  { return AnsiGreen + s + AnsiReset }
-func Red(s string) string    { return AnsiRed + s + AnsiReset }
-func Yellow(s string) string { return AnsiYellow + s + AnsiReset }
+func Bold(s string, a ...any) string   { return AnsiBold + fmt.Sprintf(s, a...) + AnsiReset }
+func Dim(s string, a ...any) string    { return AnsiDim + fmt.Sprintf(s, a...) + AnsiReset }
+func Blue(s string, a ...any) string   { return AnsiBlue + fmt.Sprintf(s, a...) + AnsiReset }
+func Cyan(s string, a ...any) string   { return AnsiCyan + fmt.Sprintf(s, a...) + AnsiReset }
+func Green(s string, a ...any) string  { return AnsiGreen + fmt.Sprintf(s, a...) + AnsiReset }
+func Red(s string, a ...any) string    { return AnsiRed + fmt.Sprintf(s, a...) + AnsiReset }
+func Yellow(s string, a ...any) string { return AnsiYellow + fmt.Sprintf(s, a...) + AnsiReset }
 
 // Rendering
 
@@ -44,6 +44,13 @@ func Banner(title string) (top, middle, bottom string) {
 	middle = strings.Repeat(" ", left) + Bold(title)
 	bottom = top
 	return
+}
+
+func PrintBanner(title string, o chan string) {
+	bannerTop, bannerMiddle, bannerBottom := Banner("BLACKJACK")
+	o <- bannerTop
+	o <- bannerMiddle
+	o <- bannerBottom
 }
 
 // renderHand draws cards horizontally using ASCII/Unicode.

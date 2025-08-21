@@ -8,6 +8,7 @@ import (
 
 	"casino/games"
 	"casino/games/blackjack"
+	"casino/games/poker"
 	"casino/utils"
 )
 
@@ -31,8 +32,10 @@ func main() {
 	saveManager := utils.NewInMemorySaveDataManager()
 	dealer := utils.NewDealer()
 	b := blackjack.NewBlackjack(dealer, saveManager, inPipe, out, cancel)
+	p := poker.NewPoker(dealer, saveManager, inPipe, out, cancel)
 	gameMap := map[int]games.Game{
 		1: b,
+		2: p,
 	}
 
 	utils.Clear(out)

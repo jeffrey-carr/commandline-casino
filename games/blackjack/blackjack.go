@@ -3,7 +3,6 @@ package blackjack
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"casino/entities"
@@ -52,38 +51,10 @@ func (b *blackjack) Play() {
 	save := b.saveManager.Read()
 	b.userChips = save.RemainingChips
 
-	bannerTop, bannerMiddle, bannerBottom := utils.Banner("BLACKJACK")
-	b.out <- bannerTop
-	b.out <- bannerMiddle
-	b.out <- bannerBottom
+	utils.PrintBanner(b.Name(), b.out)
 	b.out <- fmt.Sprintf("%sDealer stands on %d%s", utils.AnsiDim, DealerStandValue, utils.AnsiReset)
 	b.out <- utils.Dim(fmt.Sprintf("You have %d chips remaining", save.RemainingChips))
-	b.out <- "How much would you like to wager?"
-
-	for line := range b.in {
-
-		// Attempt to convert to int
-		i64, err := strconv.ParseInt(strings.TrimSpace(line), 10, 64)
-		if err != nil {
-			b.out <- utils.Yellow(utils.Bold("Wager must be a whole number"))
-			b.out <- "How much would you like to wager?"
-			continue
-		}
-		wager := int(i64)
-		if wager <= 0 {
-			b.out <- utils.Yellow(utils.Bold("Wager must be at least 1"))
-			b.out <- "How much would you like to wager?"
-			continue
-		}
-		if wager > save.RemainingChips {
-			b.out <- utils.Yellow(utils.Bold(fmt.Sprintf("You cannot wager %d, you only have %d", wager, save.RemainingChips)))
-			b.out <- "How much would you like to wager?"
-			continue
-		}
-
-		b.wager = wager
-		break
-	}
+	b.wager = utils.GetBet(b.in, b.out, "How much would you like to wager?", 1, save.RemainingChips)
 
 	b.start()
 }
