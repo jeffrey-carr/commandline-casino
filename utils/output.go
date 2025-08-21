@@ -47,7 +47,7 @@ func Banner(title string) (top, middle, bottom string) {
 }
 
 func PrintBanner(title string, o chan string) {
-	bannerTop, bannerMiddle, bannerBottom := Banner("BLACKJACK")
+	bannerTop, bannerMiddle, bannerBottom := Banner(title)
 	o <- bannerTop
 	o <- bannerMiddle
 	o <- bannerBottom
