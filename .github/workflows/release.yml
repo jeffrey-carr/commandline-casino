@@ -1,0 +1,52 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, darwin, windows]
+        goarch: [amd64, arm64]
+    env:
+      CGO_ENABLED: 0
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Build
+        run: |
+          OUT="commandline_casino_${{ github.ref_name }}_${{ matrix.goos }}_${{ matrix.goarch }}"
+          EXT=$([ "${{ matrix.goos }}" = "windows" ] && echo ".exe" || echo "")
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
+            go build -ldflags "-s -w" -o "$OUT/$OUT$EXT" ./cmd/commandline_casino
+          cp LICENSE README.md "$OUT" || true
+          (cd "$OUT" && zip -r "../$OUT.zip" .)
+      - name: Upload artifact (to pass to release job)
+        uses: actions/upload-artifact@v4
+        with:
+          name: bins
+          path: "*.zip"
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: bins
+          path: ./dist
+      - name: Create Release
+        id: create
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: ./dist/*.zip
